@@ -1,0 +1,2 @@
+# Only needed for scripts/run_experiments.py (the C++ programs have no dependencies).
+matplotlib>=3.5
