@@ -1,0 +1,31 @@
+# Build output
+build/
+build-*/
+cmake-build-*/
+out/
+CMakeUserPresets.json
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Generated traces can be hundreds of megabytes
+*.trace
+!tests/data/*.trace
+
+# Editor and OS files
+.vscode/
+.idea/
+.vs/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local tool settings, secrets and credentials: never commit these
+.claude/
+.env
+.env.*
+*.pem
+*.key

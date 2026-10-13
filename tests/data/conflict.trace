@@ -1,0 +1,18 @@
+# Hand-checkable trace for: --size 64 --block 16 --assoc 1 (4 sets, direct-mapped)
+#
+#   access      block  set  result
+R 0x00
+#               0      0    miss (cache empty)
+R 0x04
+#               0      0    hit  (same block)
+W 0x10
+#               1      1    miss (write-allocate, block 1 is now dirty)
+R 0x40
+#               4      0    miss (evicts block 0, clean)
+R 0x00
+#               0      0    miss (evicts block 4, clean)
+R 0x50
+#               5      1    miss (evicts block 1, dirty -> 1 write-back)
+#
+# Totals: 6 accesses, 1 hit, 5 misses, 3 evictions, 1 write-back.
+# With --assoc 2 the same trace gives 2 hits and 4 misses (see tests/CMakeLists.txt).
