@@ -1,0 +1,48 @@
+CacheSim experiment summary
+===========================
+
+Matrix-size sweep on an L1-like cache (32KiB, 8-way, 64-byte blocks, LRU)
+    N  naive miss%  best tile  tiled miss%  fewer misses
+   50        0.37%          4        0.30%          1.0x
+  100        6.35%         32        0.67%          9.1x
+  200        6.30%         32        0.51%         11.9x
+  300        6.28%         32        0.59%         10.3x
+  400       53.11%         32        0.45%        113.4x
+  500       44.59%         32        0.59%         73.7x
+  600       56.29%         32        0.46%        119.3x
+
+Grid sweep, N=200, at the same L1-like cache
+  naive               : 6.30% miss rate, 4997 write-backs
+  tiled, tile=4      : 1.30% miss rate, 4992 write-backs
+  tiled, tile=8      : 0.76% miss rate, 4984 write-backs
+  tiled, tile=16     : 0.79% miss rate, 4976 write-backs
+  tiled, tile=32     : 0.51% miss rate, 15132 write-backs
+  tiled, tile=64     : 2.19% miss rate, 19751 write-backs
+
+Associativity and policy, N=200, 32KiB cache (miss rate %)
+ assoc  naive LRU  naive FIFO  tiled LRU  tiled FIFO   (tile=32)
+     1     11.111      11.111      1.703       1.703
+     2      6.376       6.587      0.527       0.563
+     4      6.299       6.573      0.519       0.545
+     8      6.297       6.561      0.514       0.525
+  full      6.297       6.550      0.518       0.520
+
+Cache size, N=200, 8-way LRU (miss rate %)
+  size     naive     tiled   (tile=32)
+    1K    56.359    54.075
+    2K    56.359    48.863
+    4K    56.359     6.004
+    8K    56.359     3.953
+   16K     6.833     0.624
+   32K     6.297     0.514
+   64K     6.297     0.449
+  128K     6.297     0.309
+  256K     6.297     0.272
+  512K     0.094     0.091
+    1M     0.094     0.091
+    2M     0.094     0.091
+    4M     0.094     0.091
+
+LRU vs FIFO over all 390 grid configurations: LRU fewer misses in 208, FIFO fewer in 16, tied in 166
+
+Total: 822 simulations, 19,239,387,500 simulated memory accesses
