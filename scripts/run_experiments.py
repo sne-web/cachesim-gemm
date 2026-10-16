@@ -182,7 +182,7 @@ def style_axes(ax, title, xlabel, ylabel):
 
 
 def new_figure(plt, columns=1):
-    fig, axes = plt.subplots(1, columns, figsize=(7.6 if columns == 1 else 11.5, 4.6), sharey=False)
+    fig, axes = plt.subplots(1, columns, figsize=(7.6 if columns == 1 else 11.5, 4.6))
     fig.patch.set_facecolor(SURFACE)
     return fig, axes
 

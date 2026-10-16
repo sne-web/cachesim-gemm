@@ -1,7 +1,5 @@
 // Cache behaviour tests. Every case is small enough to trace by hand; the
 // comments show the expected outcome of each access.
-#include <stdexcept>
-
 #include "cachesim/cache.hpp"
 #include "test_framework.hpp"
 

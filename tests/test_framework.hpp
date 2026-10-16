@@ -2,9 +2,11 @@
 // downloads or third-party dependencies.
 #pragma once
 
+#include <exception>
 #include <functional>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace testing {

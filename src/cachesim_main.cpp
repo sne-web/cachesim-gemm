@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <exception>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -48,55 +49,47 @@ struct Source {
 void print_report(const Cache& cache, const Source& source) {
     const CacheConfig& config = cache.config();
     const CacheStats& stats = cache.stats();
+    std::ostream& out = std::cout;
 
-    std::printf("Cache        : %llu bytes, %llu-byte blocks, ", static_cast<unsigned long long>(config.size_bytes),
-                static_cast<unsigned long long>(config.block_bytes));
+    out << "Cache        : " << config.size_bytes << " bytes, " << config.block_bytes << "-byte blocks, ";
     if (config.ways() == 1) {
-        std::printf("direct-mapped");
+        out << "direct-mapped";
     } else if (config.num_sets() == 1) {
-        std::printf("fully associative (%llu ways)", static_cast<unsigned long long>(config.ways()));
+        out << "fully associative (" << config.ways() << " ways)";
     } else {
-        std::printf("%llu-way", static_cast<unsigned long long>(config.ways()));
+        out << config.ways() << "-way";
     }
-    std::printf(", %llu sets, %s, write-back + write-allocate\n", static_cast<unsigned long long>(config.num_sets()),
-                to_string(config.policy));
+    out << ", " << config.num_sets() << " sets, " << to_string(config.policy) << ", write-back + write-allocate\n";
 
     if (source.n == 0) {
-        std::printf("Input        : trace file\n");
+        out << "Input        : trace file\n";
     } else if (source.name == "tiled") {
-        std::printf("Input        : tiled matrix multiply, N=%llu, tile=%llu\n", static_cast<unsigned long long>(source.n),
-                    static_cast<unsigned long long>(source.tile));
+        out << "Input        : tiled matrix multiply, N=" << source.n << ", tile=" << source.tile << "\n";
     } else {
-        std::printf("Input        : naive matrix multiply, N=%llu\n", static_cast<unsigned long long>(source.n));
+        out << "Input        : naive matrix multiply, N=" << source.n << "\n";
     }
 
-    std::printf("Accesses     : %llu (%llu reads, %llu writes)\n", static_cast<unsigned long long>(stats.accesses),
-                static_cast<unsigned long long>(stats.reads), static_cast<unsigned long long>(stats.writes));
-    std::printf("Hits         : %llu\n", static_cast<unsigned long long>(stats.hits));
-    std::printf("Misses       : %llu (%llu read, %llu write)\n", static_cast<unsigned long long>(stats.misses),
-                static_cast<unsigned long long>(stats.read_misses), static_cast<unsigned long long>(stats.write_misses));
-    std::printf("Miss rate    : %.4f%%\n", stats.miss_rate() * 100.0);
-    std::printf("Evictions    : %llu\n", static_cast<unsigned long long>(stats.evictions));
-    std::printf("Write-backs  : %llu (+%llu dirty blocks still cached at the end)\n",
-                static_cast<unsigned long long>(stats.write_backs), static_cast<unsigned long long>(cache.dirty_blocks()));
+    out << "Accesses     : " << stats.accesses << " (" << stats.reads << " reads, " << stats.writes << " writes)\n"
+        << "Hits         : " << stats.hits << "\n"
+        << "Misses       : " << stats.misses << " (" << stats.read_misses << " read, " << stats.write_misses
+        << " write)\n"
+        << "Miss rate    : " << std::fixed << std::setprecision(4) << stats.miss_rate() * 100.0 << "%\n"
+        << "Evictions    : " << stats.evictions << "\n"
+        << "Write-backs  : " << stats.write_backs << " (+" << cache.dirty_blocks()
+        << " dirty blocks still cached at the end)\n";
 }
 
 void print_csv(const Cache& cache, const Source& source) {
     const CacheConfig& config = cache.config();
     const CacheStats& stats = cache.stats();
-    std::printf("workload,n,tile,cache_bytes,block_bytes,ways,sets,policy,accesses,reads,writes,hits,misses,"
-                "miss_rate,read_misses,write_misses,evictions,write_backs,dirty_at_end\n");
-    std::printf("%s,%llu,%llu,%llu,%llu,%llu,%llu,%s,%llu,%llu,%llu,%llu,%llu,%.8f,%llu,%llu,%llu,%llu,%llu\n",
-                source.name.c_str(), static_cast<unsigned long long>(source.n),
-                static_cast<unsigned long long>(source.tile), static_cast<unsigned long long>(config.size_bytes),
-                static_cast<unsigned long long>(config.block_bytes), static_cast<unsigned long long>(config.ways()),
-                static_cast<unsigned long long>(config.num_sets()), to_string(config.policy),
-                static_cast<unsigned long long>(stats.accesses), static_cast<unsigned long long>(stats.reads),
-                static_cast<unsigned long long>(stats.writes), static_cast<unsigned long long>(stats.hits),
-                static_cast<unsigned long long>(stats.misses), stats.miss_rate(),
-                static_cast<unsigned long long>(stats.read_misses), static_cast<unsigned long long>(stats.write_misses),
-                static_cast<unsigned long long>(stats.evictions), static_cast<unsigned long long>(stats.write_backs),
-                static_cast<unsigned long long>(cache.dirty_blocks()));
+    std::cout << "workload,n,tile,cache_bytes,block_bytes,ways,sets,policy,accesses,reads,writes,hits,misses,"
+                 "miss_rate,read_misses,write_misses,evictions,write_backs,dirty_at_end\n"
+              << source.name << ',' << source.n << ',' << source.tile << ',' << config.size_bytes << ','
+              << config.block_bytes << ',' << config.ways() << ',' << config.num_sets() << ','
+              << to_string(config.policy) << ',' << stats.accesses << ',' << stats.reads << ',' << stats.writes << ','
+              << stats.hits << ',' << stats.misses << ',' << std::fixed << std::setprecision(8) << stats.miss_rate()
+              << ',' << stats.read_misses << ',' << stats.write_misses << ',' << stats.evictions << ','
+              << stats.write_backs << ',' << cache.dirty_blocks() << '\n';
 }
 
 int run(int argc, char** argv) {

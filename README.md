@@ -75,7 +75,7 @@ Tiling is not free. The tiled loops revisit each result element once per tile al
 
 ## Build and run
 
-Requirements: CMake 3.16+, a C++17 compiler, and (for the graphs only) Python 3.8+ with matplotlib.
+Requirements: CMake 3.20+, a C++17 compiler, and (for the graphs only) Python 3.8+ with matplotlib.
 
 ```bash
 git clone https://github.com/sne-web/cachesim-gemm.git
